@@ -6,6 +6,7 @@ import {
     TableRow,
     TableCell,
     Tooltip,
+    Spinner,
 } from '@heroui/react';
 import { useNavigate } from 'react-router';
 import { useGetUsersQuery } from '../../services/api';
@@ -13,18 +14,12 @@ import { useCallback } from 'react';
 import { EyeIcon } from './icons/EyeIcon';
 import { EditIcon } from './icons/EditIcon';
 import { DeleteIcon } from './icons/DeleteIcon';
+import SkeletonTable from '../../components/Skeleton/Skeleton';
 
 import type { IUsers } from '../../types/types';
-import type { ColumnKey, Columns } from '../types';
-
-const columns: Columns[] = [
-    { name: 'ID', uid: 'id' },
-    { name: 'NAME', uid: 'name' },
-    { name: 'ROLE', uid: 'role' },
-    { name: 'EMAIL', uid: 'email' },
-    { name: 'Date', uid: 'date' },
-    { name: 'ACTIONS', uid: 'actions' },
-];
+import type { ColumnKey } from '../types';
+import { columns } from '.';
+import './style.scss';
 
 function UsersList() {
     const { data: users, error, isLoading } = useGetUsersQuery();
@@ -46,10 +41,20 @@ function UsersList() {
                         </div>
                     );
                 case 'email':
-                    return <div className="text-start">{user.email}</div>;
+                    return (
+                        <div className="email_user_field text-center">
+                            {user.email}
+                        </div>
+                    );
+                case 'date':
+                    return (
+                        <div className="date_user_field text-center">
+                            {user.date}
+                        </div>
+                    );
                 case 'actions':
                     return (
-                        <div className="relative flex items-center gap-2">
+                        <div className="relative flex items-center gap-2 ">
                             <Tooltip content="Details">
                                 <span className="text-lg text-default-400 cursor-pointer active:opacity-50">
                                     <EyeIcon
@@ -79,34 +84,52 @@ function UsersList() {
         },
         [navigate]
     );
-
-    if (isLoading) return <p>Завантаження...</p>;
-    if (error) return <p>Помилка при завантаженні</p>;
-
+    // if (error) return <p>Error</p>;
     return (
-        <Table aria-label="Example table with custom cells" layout="auto">
-            <TableHeader columns={columns}>
-                {(column) => (
-                    <TableColumn
-                        key={column.uid}
-                        align={column.uid === 'actions' ? 'start' : 'center'}
-                    >
-                        {column.name}
-                    </TableColumn>
-                )}
-            </TableHeader>
-            <TableBody items={users}>
-                {(item) => (
-                    <TableRow key={item.id}>
-                        {(columnKey) => (
-                            <TableCell>
-                                {renderCell(item, columnKey as ColumnKey)}
-                            </TableCell>
-                        )}
-                    </TableRow>
-                )}
-            </TableBody>
-        </Table>
+        <div>
+            <Table aria-label="Example table with custom cells" layout="auto">
+                <TableHeader columns={columns}>
+                    {(column) => (
+                        <TableColumn
+                            key={column.uid}
+                            align={
+                                column.uid === 'actions' ? 'start' : 'center'
+                            }
+                            className={
+                                column.uid === 'email' || column.uid === 'date'
+                                    ? 'hide-on-mobile'
+                                    : ''
+                            }
+                        >
+                            {column.name}
+                        </TableColumn>
+                    )}
+                </TableHeader>
+                <TableBody
+                    items={users ?? []}
+                    isLoading={isLoading}
+                    loadingContent={<Spinner label="Loading..." />}
+                    emptyContent={error && <SkeletonTable />}
+                >
+                    {(item) => (
+                        <TableRow key={item.id}>
+                            {(columnKey) => (
+                                <TableCell
+                                    className={
+                                        columnKey === 'email' ||
+                                        columnKey === 'date'
+                                            ? 'hide-on-mobile'
+                                            : ''
+                                    }
+                                >
+                                    {renderCell(item, columnKey as ColumnKey)}
+                                </TableCell>
+                            )}
+                        </TableRow>
+                    )}
+                </TableBody>
+            </Table>
+        </div>
     );
 }
 export default UsersList;

@@ -10,10 +10,10 @@ export const usersApi = createApi({
     endpoints: (builder) => ({
         getUsers: builder.query<IUsers[] | undefined, void>({
             query: () => `users`,
-            providesTags: (users) =>
-                users
+            providesTags: (result) =>
+                result
                     ? [
-                          ...users.map(({ id }) => ({
+                          ...result.map(({ id }) => ({
                               type: 'User' as const,
                               id,
                           })),
