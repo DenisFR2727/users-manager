@@ -1,11 +1,12 @@
 import { Navbar, NavbarBrand, NavbarContent, NavbarItem } from '@heroui/react';
 import { NavLink } from 'react-router';
+import './style.scss';
 
 function Header() {
     return (
-        <Navbar className="flex justify-around" shouldHideOnScroll>
-            <NavbarBrand>
-                <p className="">User manager</p>
+        <Navbar className="navbar flex justify-around " shouldHideOnScroll>
+            <NavbarBrand className="logo_user">
+                <p>User manager</p>
             </NavbarBrand>
             <NavbarContent className="" justify="center">
                 <NavbarItem>

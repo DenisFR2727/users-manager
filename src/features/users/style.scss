@@ -2,4 +2,29 @@
     .hide-on-mobile {
         display: none !important;
     }
+    table {
+        width: 40% !important;
+    }
+    th[data-key='actions'] {
+        width: 20%;
+        text-align: center;
+    }
+}
+.actions_user {
+    display: flex;
+    gap: 20px;
+    padding-top: 10px;
+    padding-bottom: 10px;
+    padding-left: 16px;
+    padding-right: 16px;
+}
+.form-user {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+.add-user {
+    width: 100%;
+    display: flex;
+    justify-content: end;
 }

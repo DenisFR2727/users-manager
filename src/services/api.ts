@@ -21,7 +21,39 @@ export const usersApi = createApi({
                       ]
                     : [{ type: 'User', id: 'LIST' }],
         }),
+        addPostUser: builder.mutation<IUsers, Partial<IUsers>>({
+            query(body) {
+                return {
+                    url: `users`,
+                    method: 'POST',
+                    body,
+                };
+            },
+            invalidatesTags: [{ type: 'User', id: 'LIST' }],
+        }),
+        deleteUser: builder.mutation<void, string | undefined>({
+            query(id) {
+                return {
+                    url: `users/${id}`,
+                    method: 'DELETE',
+                };
+            },
+            invalidatesTags: [{ type: 'User', id: 'LIST' }],
+        }),
+        updateUser: builder.mutation({
+            query: ({ id, ...user }) => ({
+                url: `/users/${id}`,
+                method: 'PUT',
+                body: user,
+            }),
+            invalidatesTags: [{ type: 'User', id: 'LIST' }],
+        }),
     }),
 });
 
-export const { useGetUsersQuery } = usersApi;
+export const {
+    useGetUsersQuery,
+    useAddPostUserMutation,
+    useDeleteUserMutation,
+    useUpdateUserMutation,
+} = usersApi;

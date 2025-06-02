@@ -7,10 +7,11 @@ import {
     TableCell,
     Tooltip,
     Spinner,
+    useDisclosure,
 } from '@heroui/react';
 import { useNavigate } from 'react-router';
-import { useGetUsersQuery } from '../../services/api';
-import { useCallback } from 'react';
+import { useDeleteUserMutation, useGetUsersQuery } from '../../services/api';
+import { useCallback, useMemo, useState } from 'react';
 import { EyeIcon } from './icons/EyeIcon';
 import { EditIcon } from './icons/EditIcon';
 import { DeleteIcon } from './icons/DeleteIcon';
@@ -20,10 +21,40 @@ import type { IUsers } from '../../types/types';
 import type { ColumnKey } from '../types';
 import { columns } from '.';
 import './style.scss';
+import SearchByNameUser from '../../components/Search/SearchInput';
+import AddUser from '../../components/Buttons/AddUser';
+import ModalUser from '../../components/Modal/Modal';
+import UserForm from './UserForm';
 
 function UsersList() {
     const { data: users, error, isLoading } = useGetUsersQuery();
+    const { isOpen, onOpen, onClose, onOpenChange } = useDisclosure();
+    const [setDeleteUser] = useDeleteUserMutation();
     const navigate = useNavigate();
+    const [search, setSearch] = useState<string>('');
+    const [editUserValue, setEditUserValue] = useState<IUsers | null>(null);
+
+    const filteredUsers = useMemo(() => {
+        if (!users) return [];
+        return users.filter((user) =>
+            user.name.toLowerCase().includes(search.toLowerCase())
+        );
+    }, [search, users]);
+
+    const deleteUser = useCallback(
+        async (userId: string | undefined) => {
+            try {
+                await setDeleteUser(userId).unwrap();
+            } catch (error) {
+                console.error('Failed to delete user', error);
+            }
+        },
+        [setDeleteUser]
+    );
+
+    const editUser = useCallback(async (user: IUsers) => {
+        setEditUserValue(user);
+    }, []);
 
     const renderCell = useCallback(
         (user: IUsers, columnKey: ColumnKey) => {
@@ -68,12 +99,25 @@ function UsersList() {
                             </Tooltip>
                             <Tooltip content="Edit user">
                                 <span className="text-lg text-default-400 cursor-pointer active:opacity-50">
-                                    <EditIcon />
+                                    <Tooltip content="Edit user">
+                                        <span className="text-lg text-default-400 cursor-pointer active:opacity-50">
+                                            <div
+                                                onClick={() => {
+                                                    editUser(user);
+                                                    onOpen();
+                                                }}
+                                            >
+                                                <EditIcon />
+                                            </div>
+                                        </span>
+                                    </Tooltip>
                                 </span>
                             </Tooltip>
                             <Tooltip color="danger" content="Delete user">
                                 <span className="text-lg text-danger cursor-pointer active:opacity-50">
-                                    <DeleteIcon />
+                                    <DeleteIcon
+                                        onClick={() => deleteUser(user.id)}
+                                    />
                                 </span>
                             </Tooltip>
                         </div>
@@ -82,11 +126,15 @@ function UsersList() {
                     return cellValue;
             }
         },
-        [navigate]
+        [navigate, deleteUser, editUser, onOpen]
     );
-    // if (error) return <p>Error</p>;
+
     return (
         <div>
+            <div className="actions_user">
+                <SearchByNameUser onSearch={setSearch} />
+                <AddUser onOpen={onOpen} />
+            </div>
             <Table aria-label="Example table with custom cells" layout="auto">
                 <TableHeader columns={columns}>
                     {(column) => (
@@ -106,7 +154,7 @@ function UsersList() {
                     )}
                 </TableHeader>
                 <TableBody
-                    items={users ?? []}
+                    items={filteredUsers ?? []}
                     isLoading={isLoading}
                     loadingContent={<Spinner label="Loading..." />}
                     emptyContent={error && <SkeletonTable />}
@@ -129,6 +177,9 @@ function UsersList() {
                     )}
                 </TableBody>
             </Table>
+            <ModalUser isOpen={isOpen} onOpenChange={onOpenChange}>
+                <UserForm onClose={onClose} user={editUserValue} />
+            </ModalUser>
         </div>
     );
 }
