@@ -10,6 +10,8 @@ interface ModalFormProps {
     onClose: () => void;
     user: IUsers | null;
 }
+const capitalize = (str: string) => str.charAt(0).toUpperCase() + str.slice(1);
+
 function UserForm({ onClose, user }: ModalFormProps) {
     const [addUser] = useAddPostUserMutation();
     const [updateUserValue] = useUpdateUserMutation();
@@ -25,11 +27,16 @@ function UserForm({ onClose, user }: ModalFormProps) {
         const newUser: IUsers = {
             name: data.name,
             email: data.email,
-            role: data.role,
+            role: capitalize(data.role),
             date: currentDate,
         };
         if (user) {
-            await updateUserValue({ id: user.id, ...newUser });
+            const updatedUser: Partial<Omit<IUsers, 'date'>> = {
+                name: data.name,
+                email: data.email,
+                role: data.role,
+            };
+            await updateUserValue({ id: user.id!, ...updatedUser });
             console.log('update user', user);
         } else {
             await addUser(newUser);

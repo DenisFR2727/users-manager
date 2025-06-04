@@ -1,7 +1,7 @@
 import type { Columns } from '../types';
 
 export const columns: Columns[] = [
-    { name: 'ID', uid: 'id' },
+    { name: '№', uid: 'index' },
     { name: 'NAME', uid: 'name' },
     { name: 'ROLE', uid: 'role' },
     { name: 'EMAIL', uid: 'email' },

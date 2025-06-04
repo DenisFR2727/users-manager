@@ -61,6 +61,12 @@ function UsersList() {
             const cellValue = user[columnKey as keyof IUsers];
 
             switch (columnKey) {
+                case 'index':
+                    return (
+                        <div className="text-center">
+                            {filteredUsers.indexOf(user) + 1}
+                        </div>
+                    );
                 case 'name':
                     return <div className="text-center">{user.name}</div>;
                 case 'role':
@@ -126,7 +132,7 @@ function UsersList() {
                     return cellValue;
             }
         },
-        [navigate, deleteUser, editUser, onOpen]
+        [navigate, deleteUser, editUser, onOpen, filteredUsers]
     );
 
     return (

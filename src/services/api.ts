@@ -40,7 +40,10 @@ export const usersApi = createApi({
             },
             invalidatesTags: [{ type: 'User', id: 'LIST' }],
         }),
-        updateUser: builder.mutation({
+        updateUser: builder.mutation<
+            string,
+            { id: string } & Partial<Omit<IUsers, 'date'>>
+        >({
             query: ({ id, ...user }) => ({
                 url: `/users/${id}`,
                 method: 'PUT',
