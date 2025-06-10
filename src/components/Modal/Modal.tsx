@@ -1,6 +1,8 @@
 import { ModalBody, ModalContent, ModalHeader, Modal } from '@heroui/react';
-import type { ReactNode } from 'react';
+import { useEffect, type ReactNode } from 'react';
 import './modal.scss';
+import { useAppDispatch } from '../../redux/hooks';
+import { setIsOpenModal } from '../../features/users/UsersSlice';
 
 interface UserFormProps {
     isOpen: boolean;
@@ -13,6 +15,16 @@ export default function ModalUser({
     onOpenChange,
     children,
 }: UserFormProps) {
+    const dispatch = useAppDispatch();
+
+    useEffect(() => {
+        if (isOpen) {
+            dispatch(setIsOpenModal(true));
+        } else {
+            dispatch(setIsOpenModal(false));
+        }
+    }, [dispatch, isOpen]);
+
     return (
         <>
             <Modal

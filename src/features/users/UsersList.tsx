@@ -10,51 +10,32 @@ import {
     useDisclosure,
 } from '@heroui/react';
 import { useNavigate } from 'react-router';
-import { useDeleteUserMutation, useGetUsersQuery } from '../../services/api';
-import { useCallback, useMemo, useState } from 'react';
-import { EyeIcon } from './icons/EyeIcon';
-import { EditIcon } from './icons/EditIcon';
-import { DeleteIcon } from './icons/DeleteIcon';
+import { useGetUsersQuery } from '../../services/api';
+import { useCallback } from 'react';
+import { EyeIcon, EditIcon, DeleteIcon } from './icons/icons';
 import SkeletonTable from '../../components/Skeleton/Skeleton';
 
 import type { IUsers } from '../../types/types';
 import type { ColumnKey } from '../types';
 import { columns } from '.';
-import './style.scss';
 import SearchByNameUser from '../../components/Search/SearchInput';
 import AddUser from '../../components/Buttons/AddUser';
 import ModalUser from '../../components/Modal/Modal';
 import UserForm from './UserForm';
+import { useUserActions } from './hooks';
+import { setEditUserValue, setSearch } from './UsersSlice';
+import { useAppDispatch, useAppSelector } from '../../redux/hooks';
+import RadioSelectRole from '../../components/Checkbox/RadioGroupSelect';
+import './style.scss';
 
 function UsersList() {
-    const { data: users, error, isLoading } = useGetUsersQuery();
+    const dispatch = useAppDispatch();
+    const { error, isLoading } = useGetUsersQuery();
     const { isOpen, onOpen, onClose, onOpenChange } = useDisclosure();
-    const [setDeleteUser] = useDeleteUserMutation();
+    const { filteredUsers, deleteUser, editUser } = useUserActions();
+    const editUserValue = useAppSelector((state) => state.users.editUserValue);
+
     const navigate = useNavigate();
-    const [search, setSearch] = useState<string>('');
-    const [editUserValue, setEditUserValue] = useState<IUsers | null>(null);
-
-    const filteredUsers = useMemo(() => {
-        if (!users) return [];
-        return users.filter((user) =>
-            user.name.toLowerCase().includes(search.toLowerCase())
-        );
-    }, [search, users]);
-
-    const deleteUser = useCallback(
-        async (userId: string | undefined) => {
-            try {
-                await setDeleteUser(userId).unwrap();
-            } catch (error) {
-                console.error('Failed to delete user', error);
-            }
-        },
-        [setDeleteUser]
-    );
-
-    const editUser = useCallback(async (user: IUsers) => {
-        setEditUserValue(user);
-    }, []);
 
     const renderCell = useCallback(
         (user: IUsers, columnKey: ColumnKey) => {
@@ -83,10 +64,10 @@ function UsersList() {
                             {user.email}
                         </div>
                     );
-                case 'date':
+                case 'createdAt':
                     return (
                         <div className="date_user_field text-center">
-                            {user.date}
+                            {user?.createdAt}
                         </div>
                     );
                 case 'actions':
@@ -137,9 +118,21 @@ function UsersList() {
 
     return (
         <div>
-            <div className="actions_user">
-                <SearchByNameUser onSearch={setSearch} />
-                <AddUser onOpen={onOpen} />
+            <div>
+                <div className="actions_user">
+                    <SearchByNameUser
+                        onSearch={(value) => dispatch(setSearch(value))}
+                    />
+                    <AddUser
+                        onOpen={() => {
+                            dispatch(setEditUserValue(null));
+                            onOpen();
+                        }}
+                    />
+                </div>
+                <div className="check-role">
+                    <RadioSelectRole />
+                </div>
             </div>
             <Table aria-label="Example table with custom cells" layout="auto">
                 <TableHeader columns={columns}>
@@ -150,7 +143,8 @@ function UsersList() {
                                 column.uid === 'actions' ? 'start' : 'center'
                             }
                             className={
-                                column.uid === 'email' || column.uid === 'date'
+                                column.uid === 'email' ||
+                                column.uid === 'createdAt'
                                     ? 'hide-on-mobile'
                                     : ''
                             }
@@ -171,7 +165,7 @@ function UsersList() {
                                 <TableCell
                                     className={
                                         columnKey === 'email' ||
-                                        columnKey === 'date'
+                                        columnKey === 'createdAt'
                                             ? 'hide-on-mobile'
                                             : ''
                                     }

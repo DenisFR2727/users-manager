@@ -1,5 +1,6 @@
 import { Button } from '@heroui/react';
 import { UserIcon } from './icons/UserIcon';
+
 interface onOpenProps {
     onOpen: () => void;
 }

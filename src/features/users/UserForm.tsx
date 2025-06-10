@@ -5,6 +5,11 @@ import {
     useAddPostUserMutation,
     useUpdateUserMutation,
 } from '../../services/api';
+import { useAppSelector } from '../../redux/hooks';
+import { useEffect, useState } from 'react';
+import AddRoleRadioGroup from '../../components/Checkbox/AddRoleRadioGroup';
+import { useDispatch } from 'react-redux';
+import { clearAddRoleAfterUpdate } from './UsersSlice';
 
 interface ModalFormProps {
     onClose: () => void;
@@ -13,10 +18,22 @@ interface ModalFormProps {
 const capitalize = (str: string) => str.charAt(0).toUpperCase() + str.slice(1);
 
 function UserForm({ onClose, user }: ModalFormProps) {
+    const dispatch = useDispatch();
     const [addUser] = useAddPostUserMutation();
     const [updateUserValue] = useUpdateUserMutation();
+    const addRole = useAppSelector((state) => state.users.addRole);
+    const [roleInputValue, setRoleInputValue] = useState(user?.role ?? '');
+
     const getDate = new Date();
     const currentDate = getDate.toLocaleDateString();
+
+    useEffect(() => {
+        if (addRole) {
+            setRoleInputValue(addRole);
+        } else if (user?.role) {
+            setRoleInputValue(user?.role);
+        }
+    }, [addRole, user]);
 
     const onSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
@@ -28,20 +45,23 @@ function UserForm({ onClose, user }: ModalFormProps) {
             name: data.name,
             email: data.email,
             role: capitalize(data.role),
-            date: currentDate,
+            createdAt: currentDate,
         };
         if (user) {
-            const updatedUser: Partial<Omit<IUsers, 'date'>> = {
+            const updatedUser: Partial<Omit<IUsers, 'createdAt'>> = {
                 name: data.name,
                 email: data.email,
                 role: data.role,
             };
             await updateUserValue({ id: user.id!, ...updatedUser });
+            dispatch(clearAddRoleAfterUpdate(''));
             console.log('update user', user);
         } else {
             await addUser(newUser);
+            dispatch(clearAddRoleAfterUpdate(''));
             console.log('Created user:', newUser);
         }
+
         onClose();
     };
     return (
@@ -58,9 +78,10 @@ function UserForm({ onClose, user }: ModalFormProps) {
                     variant="bordered"
                     errorMessage="Please enter a valid name"
                 />
+                <AddRoleRadioGroup />
                 <Input
                     name="role"
-                    defaultValue={user?.role ?? ''}
+                    value={roleInputValue}
                     isRequired
                     label="Role"
                     placeholder="Enter your role"

@@ -6,5 +6,5 @@ export interface IUsers {
     name: string;
     email: string;
     role: Role | string;
-    date?: string;
+    createdAt?: string;
 }

@@ -42,7 +42,7 @@ export const usersApi = createApi({
         }),
         updateUser: builder.mutation<
             string,
-            { id: string } & Partial<Omit<IUsers, 'date'>>
+            { id: string } & Partial<Omit<IUsers, 'createdAt'>>
         >({
             query: ({ id, ...user }) => ({
                 url: `/users/${id}`,

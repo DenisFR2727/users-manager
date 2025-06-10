@@ -5,6 +5,6 @@ export const columns: Columns[] = [
     { name: 'NAME', uid: 'name' },
     { name: 'ROLE', uid: 'role' },
     { name: 'EMAIL', uid: 'email' },
-    { name: 'Date', uid: 'date' },
+    { name: 'Date', uid: 'createdAt' },
     { name: 'ACTIONS', uid: 'actions' },
 ];
