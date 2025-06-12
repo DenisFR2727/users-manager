@@ -6,15 +6,25 @@ import { Tooltip } from '@heroui/react';
 import { EyeIcon } from '../features/users/icons/EyeIcon';
 import { DeleteIcon } from '../features/users/icons/DeleteIcon';
 
-export const renderUserCell = (
-    user: IUsers,
-    columnKey: ColumnKey,
-    navigate: NavigateFunction,
-    editUser: (user: IUsers) => void,
-    deleteUser: (id: string | undefined) => void,
-    onOpen: () => void,
-    filteredUsers: IUsers[]
-) => {
+interface RenderCellProps {
+    user: IUsers;
+    columnKey: ColumnKey;
+    navigate: NavigateFunction;
+    editUser: (user: IUsers) => void;
+    deleteUser: (id: string | undefined) => void;
+    onOpen: () => void;
+    filteredUsers: IUsers[];
+}
+
+export const renderUserCell = ({
+    user,
+    columnKey,
+    navigate,
+    editUser,
+    deleteUser,
+    onOpen,
+    filteredUsers,
+}: RenderCellProps) => {
     const cellValue = user[columnKey as keyof IUsers];
 
     switch (columnKey) {

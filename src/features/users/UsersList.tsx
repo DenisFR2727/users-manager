@@ -12,9 +12,6 @@ import { useNavigate } from 'react-router';
 import { useGetUsersQuery } from '../../services/api';
 import { useCallback } from 'react';
 import SkeletonTable from '../../components/Skeleton/Skeleton';
-
-import type { IUsers } from '../../types/types';
-import type { ColumnKey } from '../types';
 import { columns } from '.';
 import SearchByNameUser from '../../components/Search/SearchInput';
 import AddUser from '../../components/Buttons/AddUser';
@@ -24,8 +21,12 @@ import { useUserActions } from './hooks';
 import { setEditUserValue, setSearch } from './UsersSlice';
 import { useAppDispatch, useAppSelector } from '../../redux/hooks';
 import RadioSelectRole from '../../components/Checkbox/RadioGroupSelect';
-import './style.scss';
 import { renderUserCell } from '../../utils/renderCell';
+// Types
+import type { IUsers } from '../../types/types';
+import type { ColumnKey } from '../types';
+
+import './style.scss';
 
 function UsersList() {
     const dispatch = useAppDispatch();
@@ -38,15 +39,15 @@ function UsersList() {
 
     const renderCell = useCallback(
         (user: IUsers, columnKey: ColumnKey) =>
-            renderUserCell(
+            renderUserCell({
                 user,
                 columnKey,
                 navigate,
                 editUser,
                 deleteUser,
                 onOpen,
-                filteredUsers
-            ),
+                filteredUsers,
+            }),
         [navigate, deleteUser, editUser, onOpen, filteredUsers]
     );
 
