@@ -14,7 +14,7 @@ const initialState: InitialState = {
     search: '',
     editUserValue: null,
     role: 'All',
-    addRole: '',
+    addRole: 'User',
     isOpenModal: false,
 };
 
