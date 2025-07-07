@@ -5,3 +5,14 @@ header {
 .logo_user {
     max-width: 400px !important;
 }
+.nav__logo {
+    color: #fff;
+    font-weight: 900;
+    font-size: larger;
+    user-select: none;
+}
+.link__nav-user,
+.link__nav-about {
+    color: #fff;
+    font-weight: 700;
+}

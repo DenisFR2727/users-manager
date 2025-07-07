@@ -10,7 +10,7 @@ import {
 } from '@heroui/react';
 import { useNavigate } from 'react-router';
 import { useGetUsersQuery } from '../../services/api';
-import { useCallback } from 'react';
+import React, { useCallback } from 'react';
 import SkeletonTable from '../../components/Skeleton/Skeleton';
 import { columns } from '.';
 import SearchByNameUser from '../../components/Search/SearchInput';
@@ -28,7 +28,7 @@ import type { ColumnKey } from '../types';
 
 import './style.scss';
 
-function UsersList() {
+const UsersList = React.memo(function UsersList() {
     const dispatch = useAppDispatch();
     const { error, isLoading } = useGetUsersQuery();
     const { isOpen, onOpen, onClose, onOpenChange } = useDisclosure();
@@ -117,5 +117,5 @@ function UsersList() {
             </ModalUser>
         </div>
     );
-}
+});
 export default UsersList;
