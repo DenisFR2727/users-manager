@@ -10,12 +10,22 @@ function Header() {
             </NavbarBrand>
             <NavbarContent className="" justify="center">
                 <NavbarItem>
-                    <NavLink to={'user-page'}>
+                    <NavLink
+                        to={'user-page'}
+                        className={({ isActive }) =>
+                            isActive ? 'active-link' : ''
+                        }
+                    >
                         <span className="link__nav-user">User</span>
                     </NavLink>
                 </NavbarItem>
                 <NavbarItem>
-                    <NavLink to={'about-page'}>
+                    <NavLink
+                        to={'about-page'}
+                        className={({ isActive }) =>
+                            isActive ? 'active-link' : ''
+                        }
+                    >
                         <span className="link__nav-about">About</span>
                     </NavLink>
                 </NavbarItem>
